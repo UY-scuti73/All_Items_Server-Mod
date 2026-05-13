@@ -19,7 +19,7 @@ public class onClickEvent {
                 new KeyBinding(
                         "key.allitems73.openinventory",
                         InputUtil.Type.KEYSYM,
-                        GLFW.GLFW_KEY_G,
+                        GLFW.GLFW_KEY_B,
                         KeyBinding.Category.MISC
                 )
         );

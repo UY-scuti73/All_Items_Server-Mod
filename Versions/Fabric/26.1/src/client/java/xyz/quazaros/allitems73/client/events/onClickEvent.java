@@ -20,7 +20,7 @@ public class onClickEvent {
                 new KeyMapping(
                         "key.allitems73.openinventory",
                         InputConstants.Type.KEYSYM,
-                        GLFW.GLFW_KEY_G,
+                        GLFW.GLFW_KEY_B,
                         KeyMapping.Category.MISC
                 )
         );
