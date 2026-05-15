@@ -1,8 +1,8 @@
 package xyz.quazaros.allitems73.items;
 
+
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup.Type;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;

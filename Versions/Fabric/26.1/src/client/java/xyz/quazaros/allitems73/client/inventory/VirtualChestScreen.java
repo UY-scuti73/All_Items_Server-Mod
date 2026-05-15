@@ -44,7 +44,7 @@ public class VirtualChestScreen extends Screen {
     private int guiTop;
 
     public final NonNullList<ItemStack> stacks =
-            NonNullList.withSize(main.ItemList.getSize(), ItemStack.EMPTY);
+            NonNullList.withSize(main.getItemList().getSize(), ItemStack.EMPTY);
 
     private boolean filtered;
 
@@ -66,10 +66,10 @@ public class VirtualChestScreen extends Screen {
 
         if (!filtered) {
             for (int i = 0; i < stacks.size(); i++) {
-                stacks.set(i, main.ItemList.items.get(i).item_stack);
+                stacks.set(i, main.getItemList().items.get(i).item_stack);
             }
         } else {
-            ArrayList<item> filteredItemList = main.ItemList.getFilteredList();
+            ArrayList<item> filteredItemList = main.getItemList().getFilteredList();
             for (int i = 0; i < stacks.size(); i++) {
                 stacks.set(i, filteredItemList.get(i).item_stack);
             }
@@ -142,7 +142,7 @@ public class VirtualChestScreen extends Screen {
         ItemStack stack = stacks.get(slotIndex);
         if (stack.isEmpty()) return;
 
-        item tempItem = main.ItemList.get(stack.getItem().toString());
+        item tempItem = main.getItemList().get(stack.getItem().toString());
 
         List<Component> lines = new ArrayList<>();
         lines.add(Component.literal(tempItem.item_display_name).withStyle(tempItem.is_found ? ChatFormatting.GREEN : ChatFormatting.RED));
@@ -186,7 +186,7 @@ public class VirtualChestScreen extends Screen {
         int size = 16;
         if (mouseX >= x && mouseX < x + size && mouseY >= y && mouseY < y + size) {
             List<Component> lines = new ArrayList<>();
-            lines.add(Component.literal("Progress: " + main.ItemList.getProgString()).withStyle(ChatFormatting.AQUA));
+            lines.add(Component.literal("Progress: " + main.getItemList().getProgString()).withStyle(ChatFormatting.AQUA));
             context.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
         }
     }
@@ -201,7 +201,7 @@ public class VirtualChestScreen extends Screen {
 
         int size = 16;
         if (mouseX >= x && mouseX < x + size && mouseY >= y && mouseY < y + size) {
-            List<Component> lines = main.ItemList.getLeaderboard();
+            List<Component> lines = main.getItemList().getLeaderboard();
             context.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
         }
     }

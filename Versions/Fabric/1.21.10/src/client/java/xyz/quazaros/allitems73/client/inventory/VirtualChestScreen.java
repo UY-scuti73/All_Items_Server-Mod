@@ -6,7 +6,6 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -19,6 +18,8 @@ import xyz.quazaros.allitems73.main;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static xyz.quazaros.allitems73.client.events.onClickEvent.onInventoryKeyPressed;
 
 import static xyz.quazaros.allitems73.client.events.onClickEvent.onInventoryKeyPressed;
 
@@ -41,7 +42,7 @@ public class VirtualChestScreen extends Screen {
     private int guiTop;
 
     public final DefaultedList<ItemStack> stacks =
-            DefaultedList.ofSize(main.ItemList.getSize(), ItemStack.EMPTY);
+            DefaultedList.ofSize(main.getItemList().getSize(), ItemStack.EMPTY);
 
     private boolean filtered;
 
@@ -63,10 +64,10 @@ public class VirtualChestScreen extends Screen {
 
         if (!filtered) {
             for (int i = 0; i < stacks.size(); i++) {
-                stacks.set(i, main.ItemList.items.get(i).item_stack);
+                stacks.set(i, main.getItemList().items.get(i).item_stack);
             }
         } else {
-            ArrayList<item> filteredItemList = main.ItemList.getFilteredList();
+            ArrayList<item> filteredItemList = main.getItemList().getFilteredList();
             for (int i = 0; i < stacks.size(); i++) {
                 stacks.set(i, filteredItemList.get(i).item_stack);
             }
@@ -75,7 +76,6 @@ public class VirtualChestScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        super.render(context, mouseX, mouseY, deltaTicks);
         renderBackgroundTexture(context);
         drawTitle(context);
         renderSlotsAndItems(context);
@@ -85,6 +85,8 @@ public class VirtualChestScreen extends Screen {
         renderFilter(context, mouseX, mouseY);
         renderLeaderboard(context, mouseX, mouseY);
         renderLeaderboard(context, mouseX, mouseY);
+
+        super.render(context, mouseX, mouseY, deltaTicks);
     }
 
     private void renderBackgroundTexture(DrawContext context) {
@@ -139,7 +141,7 @@ public class VirtualChestScreen extends Screen {
         ItemStack stack = stacks.get(slotIndex);
         if (stack.isEmpty()) return;
 
-        item tempItem = main.ItemList.get(stack.getItem().toString());
+        item tempItem = main.getItemList().get(stack.getItem().toString());
 
         List<Text> lines = new ArrayList<>();
         lines.add(Text.literal(tempItem.item_display_name).formatted(tempItem.is_found ? Formatting.GREEN : Formatting.RED));
@@ -183,7 +185,7 @@ public class VirtualChestScreen extends Screen {
         int size = 16;
         if (mouseX >= x && mouseX < x + size && mouseY >= y && mouseY < y + size) {
             List<Text> lines = new ArrayList<>();
-            lines.add(Text.literal("Progress: " + main.ItemList.getProgString()).formatted(Formatting.AQUA));
+            lines.add(Text.literal("Progress: " + main.getItemList().getProgString()).formatted(Formatting.AQUA));
             context.drawTooltip(this.textRenderer, lines, mouseX, mouseY);
         }
     }
@@ -198,7 +200,7 @@ public class VirtualChestScreen extends Screen {
 
         int size = 16;
         if (mouseX >= x && mouseX < x + size && mouseY >= y && mouseY < y + size) {
-            List<Text> lines = main.ItemList.getLeaderboard();
+            List<Text> lines = main.getItemList().getLeaderboard();
             context.drawTooltip(this.textRenderer, lines, mouseX, mouseY);
         }
     }

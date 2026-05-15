@@ -6,10 +6,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import xyz.quazaros.allitems73.files.FileHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class itemList {
@@ -87,7 +84,7 @@ public class itemList {
 
     public List<Text> getLeaderboard() {
         List<Text> leaderboard = new ArrayList<>();
-        leaderboard.add(Text.literal("Leaderboard").formatted(Formatting.LIGHT_PURPLE));
+        leaderboard.add(Text.literal("Leaderboard").formatted(Formatting.AQUA));
 
         List<Map.Entry<String, Integer>> leaderboardEntries = getLeaderboardEntries();
 

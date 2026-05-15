@@ -69,7 +69,7 @@ public final class FileHandler {
             return;
         }
 
-        List<String> lines = main.ItemList.items.stream()
+        List<String> lines = main.getItemList().items.stream()
                 .filter(i -> i.is_found)
                 .map(i -> i.data.makeString())
                 .collect(Collectors.toList());

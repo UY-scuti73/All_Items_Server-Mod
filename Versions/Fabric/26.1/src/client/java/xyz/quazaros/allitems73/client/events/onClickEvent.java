@@ -9,13 +9,13 @@ import org.lwjgl.glfw.GLFW;
 import xyz.quazaros.allitems73.client.Allitems73Client;
 import xyz.quazaros.allitems73.client.inventory.VirtualChestScreen;
 import xyz.quazaros.allitems73.main;
+import xyz.quazaros.allitems73.network.ItemSyncHandler;
 
 public class onClickEvent {
 
     private static KeyMapping keyBinding; // Store as a static field for the listener
 
     public static void registerKeyPressed() {
-        System.out.println("TEST");
         keyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.allitems73.openinventory",
@@ -37,7 +37,8 @@ public class onClickEvent {
             return;
         }
 
-        main.ItemList.updateList(client.player.getInventory(), client.player.getName().getString());
+        ItemSyncHandler.notifyMenuOpened();
+
         client.setScreen(new VirtualChestScreen(filtered));
     }
 }
