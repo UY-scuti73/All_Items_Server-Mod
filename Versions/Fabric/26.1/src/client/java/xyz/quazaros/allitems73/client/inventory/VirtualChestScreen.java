@@ -204,7 +204,7 @@ public class VirtualChestScreen extends Screen {
             List<String> raw = main.getItemList().getLeaderboard();
             for (int i = 0; i < raw.size(); i++) {
                 String s = raw.get(i);
-                if (i == 0) lines.add(Component.literal(s).withStyle(ChatFormatting.LIGHT_PURPLE));
+                if (i == 0) lines.add(Component.literal(s).withStyle(ChatFormatting.AQUA));
                 else lines.add(Component.literal((i) + ". " + s).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             context.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
