@@ -1,6 +1,5 @@
 package xyz.quazaros.allitems73.client.network;
 
-import net.minecraft.client.Minecraft;
 import xyz.quazaros.allitems73.items.item;
 import xyz.quazaros.allitems73.items.itemList;
 import xyz.quazaros.allitems73.main;
@@ -20,14 +19,21 @@ public class ClientItemSyncHandler {
         context.enqueueWork(() -> {
             itemList list = main.getItemList();
 
-            clientCache.clear();
-            clientCache.addAll(payload.items());
+            // If the list hasn't been initialized yet by BaseItemListPayload,
+            // we should just store the progress in the cache and exit.
+            if (list.items.isEmpty()) {
+                clientCache.clear();
+                clientCache.addAll(payload.items());
+                return;
+            }
 
-            // Reset all items to not found before applying server data
-            list.items.forEach(i -> i.is_found = false);
+            // Reset all items locally before applying server data
+            for (item i : list.items) {
+                i.is_found = false;
+            }
 
             for (ItemDataPayloadEntry entry : payload.items()) {
-                item it = list.get(entry.itemName());
+                item it = list.get(entry.itemName().trim());
                 if (it != null) {
                     it.submit(entry.itemFounder(), entry.itemTime());
                 }

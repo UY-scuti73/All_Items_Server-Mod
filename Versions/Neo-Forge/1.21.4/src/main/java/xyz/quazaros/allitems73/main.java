@@ -9,6 +9,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import xyz.quazaros.allitems73.client.events.onClickEvent;
@@ -30,6 +31,7 @@ public class main {
         // 2. Server-side events (Correct)
         NeoForge.EVENT_BUS.addListener(this::onServerOpen);
         NeoForge.EVENT_BUS.addListener(this::onServerClose);
+        NeoForge.EVENT_BUS.addListener(this::onPlayerJoin);
 
         // 3. Client-side only setup
         if (FMLEnvironment.dist.isClient()) {
@@ -45,12 +47,19 @@ public class main {
     }
 
     private void onServerOpen(ServerStartedEvent event) {
+        FileHandler.initDefaultList();
         WorldKeys.setWorldKey(event.getServer());
         ItemList = new itemList();
     }
 
     private void onServerClose(ServerStoppedEvent event) {
         FileHandler.saveCurrentProgress();
+    }
+
+    private void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            ItemSyncHandler.sendBaseListToPlayer(serverPlayer);
+        }
     }
 
     public static itemList getItemList() {

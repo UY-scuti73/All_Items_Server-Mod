@@ -1,27 +1,32 @@
 package xyz.quazaros.allitems73.client.events;
 
-import com.mojang.blaze3d.platform.InputConstants;          // was client.util.InputUtil
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.KeyMapping;                    // was client.option.KeyBinding
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
-import xyz.quazaros.allitems73.client.Allitems73Client;
 import xyz.quazaros.allitems73.client.inventory.VirtualChestScreen;
-import xyz.quazaros.allitems73.main;
-import xyz.quazaros.allitems73.network.ItemSyncHandler;
+import xyz.quazaros.allitems73.client.network.ClientItemSyncHandler;
 
-public class onClickEvent {
+public final class onClickEvent {
 
-    private static KeyMapping keyBinding; // Store as a static field for the listener
+    private static KeyMapping keyBinding;
+    private static KeyMapping.Category allItemsCategory;
 
-    public static void registerKeyPressed() {
+    /** Call ONCE from ClientModInitializer#onInitializeClient(). */
+    public static void init() {
+        // Create/register the category at the correct time (client init), not earlier.
+        //Identifier id = Identifier.fromNamespaceAndPath("allitems73", "allitems");
+        //allItemsCategory = KeyMapping.Category.register(id);
+
         keyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.allitems73.openinventory",
                         InputConstants.Type.KEYSYM,
                         GLFW.GLFW_KEY_B,
-                        KeyMapping.Category.MISC
+                        KeyMapping.Category.INVENTORY
                 )
         );
 
@@ -33,12 +38,11 @@ public class onClickEvent {
     }
 
     public static void onInventoryKeyPressed(Minecraft client, boolean filtered) {
-        if (client.player == null || client.getConnection() == null) {
-            return;
-        }
+        if (client.player == null || client.getConnection() == null) return;
 
-        ItemSyncHandler.notifyMenuOpened();
-
+        ClientItemSyncHandler.notifyMenuOpened();
         client.setScreen(new VirtualChestScreen(filtered));
     }
+
+    private onClickEvent() {}
 }

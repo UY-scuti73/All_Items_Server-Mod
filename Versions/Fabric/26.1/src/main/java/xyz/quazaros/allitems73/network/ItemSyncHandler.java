@@ -1,21 +1,21 @@
 package xyz.quazaros.allitems73.network;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.quazaros.allitems73.files.FileHandler;
 import xyz.quazaros.allitems73.items.item;
+import xyz.quazaros.allitems73.items.itemData;
 import xyz.quazaros.allitems73.items.itemList;
 import xyz.quazaros.allitems73.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemSyncHandler {
 
     /* ========= SERVER ========= */
-
     public static void registerCommon() {
         // Client -> Server: menu opened / load requested
         PayloadTypeRegistry.serverboundPlay()
@@ -24,6 +24,10 @@ public class ItemSyncHandler {
         // Server -> Client: sync full itemList
         PayloadTypeRegistry.clientboundPlay()
                 .register(SyncItemListPayload.TYPE, SyncItemListPayload.CODEC);
+
+        // Server -> Client: base item list
+        PayloadTypeRegistry.clientboundPlay()
+                .register(BaseItemListPayload.TYPE, BaseItemListPayload.CODEC);
 
         // Handle menu open requests
         ServerPlayNetworking.registerGlobalReceiver(MenuOpenPayload.TYPE, (payload, context) -> {
@@ -46,38 +50,27 @@ public class ItemSyncHandler {
                 }
             }
 
-            // 3. Send to this player (or broadcast if you prefer)
+            // 3. Send to this player
             ServerPlayNetworking.send(player, new SyncItemListPayload(entries));
         });
     }
 
-    /* ========= CLIENT ========= */
-
-    public static void registerClient() {
-        // Receive server's list
-        ClientPlayNetworking.registerGlobalReceiver(SyncItemListPayload.TYPE, (payload, context) -> {
-            itemList list = main.getItemList();
-
-            // Reset client copy
-            list.items.forEach(i -> i.is_found = false);
-
-            // Apply new data
-            for (ItemDataPayloadEntry entry : payload.items()) {
-                item it = list.get(entry.itemName());
-                if (it != null) {
-                    it.submit(entry.itemFounder(), entry.itemTime());
-                }
-            }
-
-            System.out.println("[AllItems73] Client itemList updated from server");
-        });
+    /**
+     * Server-only helper: send base list to a player.
+     */
+    public static void sendBaseListToPlayer(ServerPlayer player) {
+        List<String> names = FileHandler.getBaseItemList();
+        ServerPlayNetworking.send(player, new BaseItemListPayload(names));
     }
 
-    /* ========= CLIENT API ========= */
-
-    /** Client-only: notify server that the menu was opened / load button clicked. */
-    public static void notifyMenuOpened() {
-        System.out.println("[AllItems73] Client notifying server: menu opened");
-        ClientPlayNetworking.send(new MenuOpenPayload());
+    /**
+     * Server-only helper: send saved progress (from file) to a player.
+     */
+    public static void sendSyncPacketToClient(ServerPlayer player) {
+        ArrayList<itemData> progress = FileHandler.getItemData();
+        List<ItemDataPayloadEntry> entries = progress.stream()
+                .map(data -> new ItemDataPayloadEntry(data.item_name, data.item_founder, data.item_time))
+                .collect(Collectors.toList());
+        ServerPlayNetworking.send(player, new SyncItemListPayload(entries));
     }
 }

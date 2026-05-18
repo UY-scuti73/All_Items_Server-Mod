@@ -1,6 +1,7 @@
 package xyz.quazaros.allitems73.items;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import xyz.quazaros.allitems73.files.FileHandler;
@@ -17,7 +18,7 @@ public class itemList {
         items = new ArrayList<>();
         itemMap = new HashMap<>();
 
-        ArrayList<String> string_list = FileHandler.getBaseItemList();
+        ArrayList<String> string_list = (ArrayList<String>) FileHandler.getBaseItemList();
         ArrayList<itemData> submit_list = FileHandler.getItemData();
 
         for (String s : string_list) {
@@ -32,15 +33,28 @@ public class itemList {
         }
     }
 
+    public void initializeFromNames(List<String> names) {
+        this.items.clear();
+        for (String name : names) {
+            item tempItem = new item(name);
+            if (tempItem.item_stack != null && !tempItem.item_stack.isEmpty()) {
+                items.add(tempItem);
+            }
+        }
+    }
+
     public int getSize() {
         return items.size();
     }
 
     public void updateList(Inventory inv, String player_name) {
         for (int i = 0; i < inv.getContainerSize(); i++) {
-            String name = inv.getItem(i).getItem().toString();
+            ItemStack stack = inv.getItem(i);
+            if (stack.isEmpty()) continue;
+
+            String name = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             item tempItem = get(name);
-            if (!tempItem.is_found) {
+            if (tempItem != null && !tempItem.is_found) {
                 tempItem.submit(player_name);
             }
         }
@@ -51,9 +65,14 @@ public class itemList {
     }
 
     public item get(String name) {
-        item tempItem = itemMap.get(name);
-        if (tempItem == null) {return new item("minecraft:air");}
-        return tempItem;
+        if (name == null) return null;
+        String searchName = name.trim().toLowerCase();
+        for (item i : items) {
+            if (i.item_name.trim().equalsIgnoreCase(searchName)) {
+                return i;
+            }
+        }
+        return null;
     }
 
     public String getProgString() {
@@ -82,18 +101,13 @@ public class itemList {
         return filteredList;
     }
 
-    public List<Component> getLeaderboard() {
-        List<Component> leaderboard = new ArrayList<>();
-        leaderboard.add(Component.literal("Leaderboard").withStyle(ChatFormatting.LIGHT_PURPLE));
-
-        List<Map.Entry<String, Integer>> leaderboardEntries = getLeaderboardEntries();
-
-        for (Map.Entry<String, Integer> entry : leaderboardEntries) {
-            String text = "1. " +  entry.getKey() + ": " + entry.getValue();
-            leaderboard.add(Component.literal(text).withStyle(ChatFormatting.LIGHT_PURPLE));
+    public List<String> getLeaderboard() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Leaderboard");
+        for (Map.Entry<String, Integer> entry : getLeaderboardEntries()) {
+            lines.add(entry.getKey() + ": " + entry.getValue());
         }
-
-        return leaderboard;
+        return lines;
     }
 
     List<Map.Entry<String, Integer>> getLeaderboardEntries() {

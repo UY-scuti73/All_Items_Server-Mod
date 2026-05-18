@@ -1,7 +1,6 @@
 package xyz.quazaros.allitems73;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -48,6 +47,7 @@ public class main {
     }
 
     private void onServerOpen(ServerStartedEvent event) {
+        FileHandler.initDefaultList();
         WorldKeys.setWorldKey(event.getServer());
         ItemList = new itemList();
     }
@@ -57,9 +57,8 @@ public class main {
     }
 
     private void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             ItemSyncHandler.sendBaseListToPlayer(serverPlayer);
-            ItemSyncHandler.sendSyncPacketToClient(serverPlayer);
         }
     }
 

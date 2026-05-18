@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -75,6 +76,7 @@ public class VirtualChestScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        super.render(context, mouseX, mouseY, deltaTicks);
         renderBackgroundTexture(context);
         drawTitle(context);
         renderSlotsAndItems(context);
@@ -84,8 +86,6 @@ public class VirtualChestScreen extends Screen {
         renderFilter(context, mouseX, mouseY);
         renderLeaderboard(context, mouseX, mouseY);
         renderLeaderboard(context, mouseX, mouseY);
-
-        super.render(context, mouseX, mouseY, deltaTicks);
     }
 
     private void renderBackgroundTexture(DrawContext context) {

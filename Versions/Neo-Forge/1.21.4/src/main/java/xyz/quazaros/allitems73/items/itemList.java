@@ -1,10 +1,12 @@
 package xyz.quazaros.allitems73.items;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import xyz.quazaros.allitems73.files.FileHandler;
+import xyz.quazaros.allitems73.network.ItemDataPayloadEntry;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,12 +19,12 @@ public class itemList {
         items = new ArrayList<>();
         itemMap = new HashMap<>();
 
-        ArrayList<String> string_list = FileHandler.getBaseItemList();
+        ArrayList<String> string_list = (ArrayList<String>) FileHandler.getBaseItemList();
         ArrayList<itemData> submit_list = FileHandler.getItemData();
 
         for (String s : string_list) {
             item tempItem = new item(s);
-            // NeoForge item checks
+
             if (tempItem.item_stack != null && !tempItem.item_stack.isEmpty()) {
                 items.add(tempItem);
             }
@@ -40,20 +42,33 @@ public class itemList {
         }
     }
 
+    public void initializeFromNames(List<String> names) {
+        this.items.clear();
+        for (String name : names) {
+            item tempItem = new item(name);
+            if (tempItem.item_stack != null && !tempItem.item_stack.isEmpty()) {
+                items.add(tempItem);
+            }
+        }
+    }
+
     public int getSize() {
         return items.size();
     }
 
-    public void updateList(Container inv, String player_name) {
+    public void updateList(Container inv, String founderName) {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (stack.isEmpty()) continue;
 
-            // In 1.21.1, use the item registry name for the key
-            String name = stack.getItemHolder().getRegisteredName();
-            item tempItem = get(name);
-            if (!tempItem.is_found) {
-                tempItem.submit(player_name);
+            String itemName = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+
+            item tempItem = this.get(itemName);
+
+            if (tempItem != null) {
+                if (!tempItem.is_found) {
+                    tempItem.submit(founderName);
+                }
             }
         }
     }
@@ -64,11 +79,15 @@ public class itemList {
     }
 
     public item get(String name) {
-        item tempItem = itemMap.get(name);
-        if (tempItem == null) {
-            return new item("minecraft:air");
+        if (name == null) return null;
+        String searchName = name.trim().toLowerCase();
+
+        for (item i : this.items) {
+            if (i.data.item_name.trim().equalsIgnoreCase(searchName)) {
+                return i;
+            }
         }
-        return tempItem;
+        return null;
     }
 
     public String getProgString() {

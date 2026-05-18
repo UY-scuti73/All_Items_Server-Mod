@@ -2,6 +2,7 @@ package xyz.quazaros.allitems73.items;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import xyz.quazaros.allitems73.files.FileHandler;
@@ -17,7 +18,7 @@ public class itemList {
         items = new ArrayList<>();
         itemMap = new HashMap<>();
 
-        ArrayList<String> string_list = FileHandler.getBaseItemList();
+        ArrayList<String> string_list = (ArrayList<String>) FileHandler.getBaseItemList();
         ArrayList<itemData> submit_list = FileHandler.getItemData();
 
         for (String s : string_list) {
@@ -32,15 +33,28 @@ public class itemList {
         }
     }
 
+    public void initializeFromNames(List<String> names) {
+        this.items.clear();
+        for (String name : names) {
+            item tempItem = new item(name);
+            if (tempItem.item_stack != null && !tempItem.item_stack.isEmpty()) {
+                items.add(tempItem);
+            }
+        }
+    }
+
     public int getSize() {
         return items.size();
     }
 
     public void updateList(Inventory inv, String player_name) {
         for (int i = 0; i < inv.size(); i++) {
-            String name = inv.getStack(i).getItem().toString();
+            ItemStack stack = inv.getStack(i);
+            if (stack.isEmpty()) continue;
+
+            String name = Registries.ITEM.getId(stack.getItem()).toString();
             item tempItem = get(name);
-            if (!tempItem.is_found) {
+            if (tempItem != null && !tempItem.is_found) {
                 tempItem.submit(player_name);
             }
         }
@@ -51,9 +65,14 @@ public class itemList {
     }
 
     public item get(String name) {
-        item tempItem = itemMap.get(name);
-        if (tempItem == null) {return new item("minecraft:air");}
-        return tempItem;
+        if (name == null) return null;
+        String searchName = name.trim().toLowerCase();
+        for (item i : items) {
+            if (i.item_name.trim().equalsIgnoreCase(searchName)) {
+                return i;
+            }
+        }
+        return null;
     }
 
     public String getProgString() {
@@ -88,8 +107,9 @@ public class itemList {
 
         List<Map.Entry<String, Integer>> leaderboardEntries = getLeaderboardEntries();
 
+        int rank = 1;
         for (Map.Entry<String, Integer> entry : leaderboardEntries) {
-            String text = "1. " +  entry.getKey() + ": " + entry.getValue();
+            String text = rank++ + ". " +  entry.getKey() + ": " + entry.getValue();
             leaderboard.add(Text.literal(text).formatted(Formatting.LIGHT_PURPLE));
         }
 

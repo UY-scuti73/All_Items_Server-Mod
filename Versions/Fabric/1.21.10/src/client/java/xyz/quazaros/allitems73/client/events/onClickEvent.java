@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import xyz.quazaros.allitems73.client.inventory.VirtualChestScreen;
 import xyz.quazaros.allitems73.client.network.ClientItemSyncHandler;
@@ -13,12 +14,15 @@ public class onClickEvent {
     public static void registerKeyPressed() {
         KeyBinding keyBinding;
 
+        Identifier id = Identifier.of("allitems73", "menu_category");
+        KeyBinding.Category allItemsCategory = KeyBinding.Category.create(id);
+
         keyBinding = KeyBindingHelper.registerKeyBinding(
                 new KeyBinding(
                         "key.allitems73.openinventory",
                         InputUtil.Type.KEYSYM,
                         GLFW.GLFW_KEY_B,
-                        KeyBinding.Category.MISC
+                        allItemsCategory
                 )
         );
 

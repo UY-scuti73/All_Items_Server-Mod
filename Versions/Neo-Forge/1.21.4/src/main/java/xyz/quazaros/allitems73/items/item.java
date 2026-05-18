@@ -5,6 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,8 +54,13 @@ public class item {
     }
 
     private Item getType() {
-        ResourceLocation rl = ResourceLocation.parse(item_name);
-        return BuiltInRegistries.ITEM.getValue(rl);
+        // NeoForge uses BuiltInRegistries instead of Registries
+        try {
+            ResourceLocation rl = ResourceLocation.parse(item_name);
+            return BuiltInRegistries.ITEM.getValue(rl);
+        } catch (Exception e) {
+            return Items.AIR;
+        }
     }
 
     private String camel_case(String str) {

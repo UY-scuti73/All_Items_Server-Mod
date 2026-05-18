@@ -3,10 +3,12 @@ package xyz.quazaros.allitems73;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.quazaros.allitems73.files.FileHandler;
 import xyz.quazaros.allitems73.items.itemList;
 import xyz.quazaros.allitems73.network.ItemSyncHandler;
@@ -25,8 +27,15 @@ public class main implements ModInitializer {
         ItemSyncHandler.registerReceivers();
 
         registerServerLifecycleCallbacks();
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.player;
+            ItemSyncHandler.sendBaseListToPlayer(player);
+            ItemSyncHandler.sendSyncPacketToClient(player);
+        });
     }
     private void onServerOpen(MinecraftServer server) {
+        FileHandler.initDefaultList();
         setWorldKey(server);
         ItemList = new itemList();
     }

@@ -1,23 +1,21 @@
 package xyz.quazaros.allitems73.network;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import xyz.quazaros.allitems73.client.network.ClientItemSyncHandler;
 import xyz.quazaros.allitems73.files.FileHandler;
 import xyz.quazaros.allitems73.items.item;
+import xyz.quazaros.allitems73.items.itemData;
 import xyz.quazaros.allitems73.items.itemList;
 import xyz.quazaros.allitems73.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemSyncHandler {
-
-    /**
-     * In NeoForge 1.21.1, this is called via the mod event bus listener
-     * registered in the main class constructor.
-     */
     public static void registerPayloads(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
 
@@ -34,6 +32,36 @@ public class ItemSyncHandler {
                 SyncItemListPayload.CODEC,
                 ClientItemSyncHandler::handleSync
         );
+
+        // 3. Server's item list
+        registrar.playToClient(
+                BaseItemListPayload.ID,
+                BaseItemListPayload.CODEC,
+                (payload, context) -> {
+                    context.enqueueWork(() -> {
+                        // Update the client-side itemList with these names
+                        main.getItemList().initializeFromNames(payload.itemNames());
+                    });
+                }
+        );
+    }
+
+    public static void sendBaseListToPlayer(ServerPlayer player) {
+        List<String> names = FileHandler.getBaseItemList();
+        PacketDistributor.sendToPlayer(player, new BaseItemListPayload(names));
+    }
+
+    public static void sendSyncPacketToClient(ServerPlayer player) {
+        // 1. Get the current progress data from your FileHandler
+        ArrayList<itemData> progress = FileHandler.getItemData();
+
+        // 2. Convert to the Payload Entry format your SyncItemListPayload expects
+        List<ItemDataPayloadEntry> entries = progress.stream()
+                .map(data -> new ItemDataPayloadEntry(data.item_name, data.item_founder, data.item_time))
+                .collect(Collectors.toList());
+
+        // 3. Send it
+        PacketDistributor.sendToPlayer(player, new SyncItemListPayload(entries));
     }
 
     /**

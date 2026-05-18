@@ -14,14 +14,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.NonNullList;
 
-import xyz.quazaros.allitems73.client.Allitems73Client;
 import xyz.quazaros.allitems73.items.item;
 import xyz.quazaros.allitems73.main;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static xyz.quazaros.allitems73.client.events.onClickEvent.onInventoryKeyPressed;
 
 import static xyz.quazaros.allitems73.client.events.onClickEvent.onInventoryKeyPressed;
 
@@ -43,8 +40,7 @@ public class VirtualChestScreen extends Screen {
     private int guiLeft;
     private int guiTop;
 
-    public final NonNullList<ItemStack> stacks =
-            NonNullList.withSize(main.getItemList().getSize(), ItemStack.EMPTY);
+    public NonNullList<ItemStack> stacks = NonNullList.create();
 
     private boolean filtered;
 
@@ -63,6 +59,9 @@ public class VirtualChestScreen extends Screen {
     public void init() {
         this.guiLeft = (this.width - BACKGROUND_WIDTH) / 2;
         this.guiTop = (this.height - BACKGROUND_HEIGHT) / 2;
+
+        int totalItems = !filtered ? main.getItemList().getSize() : main.getItemList().getFilteredList().size();
+        this.stacks = NonNullList.withSize(totalItems, ItemStack.EMPTY);
 
         if (!filtered) {
             for (int i = 0; i < stacks.size(); i++) {
@@ -201,7 +200,13 @@ public class VirtualChestScreen extends Screen {
 
         int size = 16;
         if (mouseX >= x && mouseX < x + size && mouseY >= y && mouseY < y + size) {
-            List<Component> lines = main.getItemList().getLeaderboard();
+            List<Component> lines = new ArrayList<>();
+            List<String> raw = main.getItemList().getLeaderboard();
+            for (int i = 0; i < raw.size(); i++) {
+                String s = raw.get(i);
+                if (i == 0) lines.add(Component.literal(s).withStyle(ChatFormatting.LIGHT_PURPLE));
+                else lines.add(Component.literal((i) + ". " + s).withStyle(ChatFormatting.LIGHT_PURPLE));
+            }
             context.setComponentTooltipForNextFrame(this.font, lines, mouseX, mouseY);
         }
     }

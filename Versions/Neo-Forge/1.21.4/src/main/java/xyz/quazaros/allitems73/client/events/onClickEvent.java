@@ -20,7 +20,7 @@ public class onClickEvent {
                 "key.allitems73.openinventory",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
-                "key.categories.misc"
+                "key.categories.allitems73"
         );
         event.register(openInventoryKey);
     }

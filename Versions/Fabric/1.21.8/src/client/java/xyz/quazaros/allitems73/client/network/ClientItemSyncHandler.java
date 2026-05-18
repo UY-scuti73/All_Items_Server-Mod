@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import xyz.quazaros.allitems73.items.item;
 import xyz.quazaros.allitems73.items.itemList;
 import xyz.quazaros.allitems73.main;
+import xyz.quazaros.allitems73.network.BaseItemListPayload;
 import xyz.quazaros.allitems73.network.ItemDataPayloadEntry;
 import xyz.quazaros.allitems73.network.MenuOpenPayload;
 import xyz.quazaros.allitems73.network.SyncItemListPayload;
@@ -16,12 +17,19 @@ public class ClientItemSyncHandler {
     public static final List<ItemDataPayloadEntry> clientCache = new ArrayList<>();
 
     public static void registerClient() {
+        // Receive the server's base item list and initialize the client-side list
+        ClientPlayNetworking.registerGlobalReceiver(BaseItemListPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                main.getItemList().initializeFromNames(payload.itemNames());
+            });
+        });
+
+        // Receive progress sync from server
         ClientPlayNetworking.registerGlobalReceiver(SyncItemListPayload.ID, (payload, context) -> {
             context.client().execute(() -> {
                 itemList list = main.getItemList();
 
                 clientCache.clear();
-
                 clientCache.addAll(payload.items());
 
                 list.items.forEach(i -> i.is_found = false);
