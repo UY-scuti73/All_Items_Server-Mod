@@ -13,14 +13,8 @@ import xyz.quazaros.allitems73.client.network.ClientItemSyncHandler;
 public final class onClickEvent {
 
     private static KeyMapping keyBinding;
-    private static KeyMapping.Category allItemsCategory;
 
-    /** Call ONCE from ClientModInitializer#onInitializeClient(). */
     public static void init() {
-        // Create/register the category at the correct time (client init), not earlier.
-        //Identifier id = Identifier.fromNamespaceAndPath("allitems73", "allitems");
-        //allItemsCategory = KeyMapping.Category.register(id);
-
         keyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.allitems73.openinventory",

@@ -179,7 +179,7 @@ public class VirtualChestScreen extends Screen {
         int y = guiTop + SLOT_OFFSET_Y + VISIBLE_ROWS * SLOT_SIZE + 4;
         guiGraphics.renderItem(new ItemStack(Items.DIAMOND), x, y);
 
-        Component c = Component.literal("Progress").withStyle(ChatFormatting.AQUA);
+        Component c = Component.literal("Progress: " + main.getItemList().getProgString()).withStyle(ChatFormatting.AQUA);
 
         List<ClientTooltipComponent> lines = new ArrayList<>();
         lines.add(new ClientTextTooltip(c.getVisualOrderText()));

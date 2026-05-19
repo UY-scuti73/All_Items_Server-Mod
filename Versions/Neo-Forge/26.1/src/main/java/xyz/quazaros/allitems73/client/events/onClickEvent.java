@@ -18,14 +18,11 @@ public class onClickEvent {
     public static KeyMapping OPEN_INVENTORY_KEY;
 
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-        KeyMapping.Category allItemsCategory =
-                new KeyMapping.Category(Identifier.fromNamespaceAndPath("allitems73", "menu_category"));
-
         OPEN_INVENTORY_KEY = new KeyMapping(
                 "key.allitems73.openinventory",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
-                allItemsCategory
+                KeyMapping.Category.INVENTORY
         );
 
         event.register(OPEN_INVENTORY_KEY);
