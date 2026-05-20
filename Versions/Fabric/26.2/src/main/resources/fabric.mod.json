@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [ "${mod_authors}" ],
+  "contact": {},
+  "license": "${mod_license}",
+  "icon": "pack.png",
+  "entrypoints": {
+    "fabric-datagen": [
+      "xyz.quazaros.allitems73.client.Allitems73DataGenerator"
+    ],
+    "client": [
+      "xyz.quazaros.allitems73.client.Allitems73Client"
+    ],
+    "main": [
+      "xyz.quazaros.allitems73.main"
+    ]
+  },
+  "mixins": [
+    "allitems73.mixins.json",
+    {
+      "config": "allitems73.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
