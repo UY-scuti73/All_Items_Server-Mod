@@ -42,6 +42,6 @@ public class onClickEvent {
         ClientItemSyncHandler.notifyMenuOpened();
 
         // Open the screen
-        client.setScreen(new VirtualChestScreen(filtered));
+        client.setScreenAndShow(new VirtualChestScreen(filtered));
     }
 }

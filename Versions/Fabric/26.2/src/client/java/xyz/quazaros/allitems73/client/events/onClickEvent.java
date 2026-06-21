@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import xyz.quazaros.allitems73.client.inventory.VirtualChestScreen;
 import xyz.quazaros.allitems73.client.network.ClientItemSyncHandler;
@@ -35,7 +34,7 @@ public final class onClickEvent {
         if (client.player == null || client.getConnection() == null) return;
 
         ClientItemSyncHandler.notifyMenuOpened();
-        client.setScreen(new VirtualChestScreen(filtered));
+        client.setScreenAndShow(new VirtualChestScreen(filtered));
     }
 
     private onClickEvent() {}
